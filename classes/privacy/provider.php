@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/** This code is based on plugin customfield_checkbox  
+/** This code is based on plugin customfield_checkbox Privacy Subsystem implementation by:  
 * @copyright 2018 Daniel Neis Araujo <danielneis@gmail.com>
 */
 
