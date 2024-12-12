@@ -20,10 +20,17 @@ use core_customfield_generator;
 use core_customfield_test_instance_form;
 
 /**
- * Functional test for customfield_checkbox
- *
- * @package    customfield_checkbox
+ * This code is based on customfield_checkbox
  * @copyright  2019 Marina Glancy
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+
+/**
+ * Functional test for customfield_courselist
+ *
+ * @package    customfield_courselist
+ * @copyright  2024, emeneo
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class plugin_test extends \advanced_testcase {
