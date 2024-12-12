@@ -15,11 +15,18 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Customfield checkbox plugin
- * @package   customfield_checkbox
+ * This code is based on customfield_checkbox
  * @copyright 2018 Toni Barbera <toni@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+/**
+ * Customfield courselist plugin
+ * @package   customfield_courselist
+ * @copyright 2024, emeneo
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 
 defined('MOODLE_INTERNAL') || die();
 
