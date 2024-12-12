@@ -1,0 +1,1 @@
+This customfield plugin courselist is part of the local plugin courselist. It is based on the checkbox customfield but differs in that it adds the ability to upload an image. This image is used by the courselist plugin in combination with the actual value or title to display a card menu.
