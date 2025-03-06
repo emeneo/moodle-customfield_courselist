@@ -14,19 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/** This code is based on plugin customfield_checkbox Privacy Subsystem implementation by:  
-* @copyright 2018 Daniel Neis Araujo <danielneis@gmail.com>
-*/
-
 /**
- * Privacy Subsystem implementation for customfield_courselist.
+ * Privacy Subsystem implementation for customfield_checkbox.
  *
- * @package    customfield_customfield
- * @copyright  2024 onwards, emeneo
+ * @package    customfield_checkbox
+ * @copyright  2018 Daniel Neis Araujo <danielneis@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-namespace customfield_courselist\privacy;
+namespace customfield_checkbox\privacy;
 
 use core_customfield\data_controller;
 use core_customfield\privacy\customfield_provider;
@@ -34,6 +29,12 @@ use core_privacy\local\request\writer;
 
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * Privacy Subsystem for customfield_checkbox implementing null_provider.
+ *
+ * @copyright  2018 Daniel Neis Araujo <danielneis@gmail.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class provider implements \core_privacy\local\metadata\null_provider, customfield_provider {
 
     /**

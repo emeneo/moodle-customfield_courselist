@@ -14,22 +14,17 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/** This code is based on plugin customfield_checkbox  
-* @copyright 2018 Toni Barbera <toni@moodle.com>
-*/
-
-
 /**
- * Customfield courselist plugin
- * @package   customfield_courselist
- * @copyright 2024 emeneo
+ * Customfield checkbox plugin
+ * @package   customfield_checkbox
+ * @copyright 2018 Toni Barbera <toni@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'customfield_courselist';
-$plugin->release   = '4.4-a2';
+$plugin->release   = '4.5-a';
 $plugin->version   = 2024120601;
 $plugin->requires  = 2022111800;
 $plugin->maturity  = MATURITY_STABLE;

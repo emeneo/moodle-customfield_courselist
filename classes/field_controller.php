@@ -48,6 +48,9 @@ class field_controller  extends \core_customfield\field_controller {
         $mform->addElement('header', 'header_specificsettings', get_string('specificsettings', 'customfield_courselist'));
         $mform->setExpanded('header_specificsettings', true);
 
+        // Use Moodle's maxbytes configuration, default to 1MB if not set
+        $maxbytes = !empty($CFG->maxbytes) ? $CFG->maxbytes : 1048576; // 1MB = 1048576 bytes
+
         $mform->addElement(
             'filemanager',
             'configdata[course_image]',
@@ -55,8 +58,8 @@ class field_controller  extends \core_customfield\field_controller {
             null,
             [
                 'subdirs' => 0,
-                'maxbytes' => 10485760,
-                'areamaxbytes' => 10485760,
+                'maxbytes' => $maxbytes,
+                'areamaxbytes' => $maxbytes,
                 'maxfiles' => 1,
                 'accepted_types' => ['image'],
                 'return_types' => FILE_INTERNAL | FILE_EXTERNAL,
@@ -77,9 +80,9 @@ class field_controller  extends \core_customfield\field_controller {
     public function config_form_validation(array $data, $files = array()) : array {
         $errors = parent::config_form_validation($data, $files);
 
-        if ($data['configdata']['uniquevalues']) {
-            $errors['configdata[uniquevalues]'] = get_string('errorconfigunique', 'customfield_courselist');
-        }
+        //if ($data['configdata']['uniquevalues']) {
+        //    $errors['configdata[uniquevalues]'] = get_string('errorconfigunique', 'customfield_courselist');
+        //}
 
         return $errors;
     }

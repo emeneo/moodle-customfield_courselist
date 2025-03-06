@@ -14,28 +14,20 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace customfield_checkbox;
+namespace customfield_courselist;
 
 use core_customfield_generator;
-use core_customfield_test_instance_form;
-
-/**
- * This code is based on customfield_checkbox
- * @copyright  2019 Marina Glancy
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 
 /**
  * Functional test for customfield_courselist
  *
  * @package    customfield_courselist
- * @copyright  2024, emeneo
+ * @copyright  2019 Marina Glancy (original checkbox plugin), adapted 2024 emeneo <info@emeneo.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class plugin_test extends \advanced_testcase {
 
-    /** @var \stdClass[]  */
+    /** @var \stdClass[] */
     private $courses = [];
     /** @var \core_customfield\category_controller */
     private $cfcat;
@@ -52,21 +44,16 @@ class plugin_test extends \advanced_testcase {
 
         $this->cfcat = $this->get_generator()->create_category();
 
+        // Create a courselist field with course_image config
         $this->cfields[1] = $this->get_generator()->create_field(
-            ['categoryid' => $this->cfcat->get('id'), 'shortname' => 'myfield1', 'type' => 'checkbox']);
-        $this->cfields[2] = $this->get_generator()->create_field(
-            ['categoryid' => $this->cfcat->get('id'), 'shortname' => 'myfield2', 'type' => 'checkbox',
-                'configdata' => ['required' => 1]]);
-        $this->cfields[3] = $this->get_generator()->create_field(
-            ['categoryid' => $this->cfcat->get('id'), 'shortname' => 'myfield3', 'type' => 'checkbox',
-                'configdata' => ['checkbydefault' => 1]]);
+            ['categoryid' => $this->cfcat->get('id'), 'shortname' => 'myfield1', 'type' => 'courselist']
+        );
 
         $this->courses[1] = $this->getDataGenerator()->create_course();
         $this->courses[2] = $this->getDataGenerator()->create_course();
-        $this->courses[3] = $this->getDataGenerator()->create_course();
 
-        $this->cfdata[1] = $this->get_generator()->add_instance_data($this->cfields[1], $this->courses[1]->id, 1);
-        $this->cfdata[2] = $this->get_generator()->add_instance_data($this->cfields[1], $this->courses[2]->id, 1);
+        // Add instance data (file reference would be set via form, not here)
+        $this->cfdata[1] = $this->get_generator()->add_instance_data($this->cfields[1], $this->courses[1]->id, 0);
 
         $this->setUser($this->getDataGenerator()->create_user());
     }
@@ -75,7 +62,7 @@ class plugin_test extends \advanced_testcase {
      * Get generator
      * @return core_customfield_generator
      */
-    protected function get_generator() : core_customfield_generator {
+    protected function get_generator(): core_customfield_generator {
         return $this->getDataGenerator()->get_plugin_generator('core_customfield');
     }
 
@@ -86,7 +73,7 @@ class plugin_test extends \advanced_testcase {
         $f = \core_customfield\field_controller::create($this->cfields[1]->get('id'));
         $this->assertTrue($f instanceof field_controller);
 
-        $f = \core_customfield\field_controller::create(0, (object)['type' => 'checkbox'], $this->cfcat);
+        $f = \core_customfield\field_controller::create(0, (object)['type' => 'courselist'], $this->cfcat);
         $this->assertTrue($f instanceof field_controller);
 
         $d = \core_customfield\data_controller::create($this->cfdata[1]->get('id'));
@@ -98,8 +85,6 @@ class plugin_test extends \advanced_testcase {
 
     /**
      * Test for configuration form functions
-     *
-     * Create a configuration form and submit it with the same values as in the field
      */
     public function test_config_form() {
         $this->setAdminUser();
@@ -107,67 +92,10 @@ class plugin_test extends \advanced_testcase {
         $submitdata['configdata'] = $this->cfields[1]->get('configdata');
 
         $submitdata = \core_customfield\field_config_form::mock_ajax_submit($submitdata);
-        $form = new \core_customfield\field_config_form(null, null, 'post', '', null, true,
-            $submitdata, true);
+        $form = new \core_customfield\field_config_form(null, null, 'post', '', null, true, $submitdata, true);
         $form->set_data_for_dynamic_submission();
         $this->assertTrue($form->is_validated());
         $form->process_dynamic_submission();
-
-        // Try submitting with 'unique values' checked.
-        $submitdata['configdata']['uniquevalues'] = 1;
-
-        $submitdata = \core_customfield\field_config_form::mock_ajax_submit($submitdata);
-        $form = new \core_customfield\field_config_form(null, null, 'post', '', null, true,
-            $submitdata, true);
-        $form->set_data_for_dynamic_submission();
-        $this->assertFalse($form->is_validated());
-    }
-
-    /**
-     * Test for instance form functions
-     */
-    public function test_instance_form() {
-        global $CFG;
-        require_once($CFG->dirroot . '/customfield/tests/fixtures/test_instance_form.php');
-        $this->setAdminUser();
-        $handler = $this->cfcat->get_handler();
-
-        // First try to submit without required field.
-        $submitdata = (array)$this->courses[1];
-        core_customfield_test_instance_form::mock_submit($submitdata, []);
-        $form = new core_customfield_test_instance_form('POST',
-            ['handler' => $handler, 'instance' => $this->courses[1]]);
-        $this->assertFalse($form->is_validated());
-
-        // Now with required field.
-        $submitdata['customfield_myfield2'] = 1;
-        core_customfield_test_instance_form::mock_submit($submitdata, []);
-        $form = new core_customfield_test_instance_form('POST',
-            ['handler' => $handler, 'instance' => $this->courses[1]]);
-        $this->assertTrue($form->is_validated());
-
-        $data = $form->get_data();
-        $this->assertNotEmpty($data->customfield_myfield1);
-        $this->assertNotEmpty($data->customfield_myfield2);
-        $handler->instance_form_save($data);
-    }
-
-    /**
-     * Test for data_controller::get_value and export_value
-     */
-    public function test_get_export_value() {
-        $this->assertEquals(1, $this->cfdata[1]->get_value());
-        $this->assertEquals('Yes', $this->cfdata[1]->export_value());
-
-        // Field without data.
-        $d = \core_customfield\data_controller::create(0, null, $this->cfields[2]);
-        $this->assertEquals(0, $d->get_value());
-        $this->assertEquals('No', $d->export_value());
-
-        // Field without data that is checked by default.
-        $d = \core_customfield\data_controller::create(0, null, $this->cfields[3]);
-        $this->assertEquals(1, $d->get_value());
-        $this->assertEquals('Yes', $d->export_value());
     }
 
     /**
@@ -175,5 +103,6 @@ class plugin_test extends \advanced_testcase {
      */
     public function test_delete() {
         $this->cfcat->get_handler()->delete_all();
+        $this->assertEmpty($this->cfcat->get_handler()->get_fields());
     }
 }

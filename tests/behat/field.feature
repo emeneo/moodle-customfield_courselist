@@ -1,78 +1,36 @@
-@customfield @customfield_checkbox @javascript
-Feature: Managers can manage course custom fields checkbox
-  In order to have additional data on the course
-  As a manager
-  I need to create, edit, remove and sort custom fields
+# customfield_courselist/tests/behat/field.feature
+@core @core_customfield
+Feature: Courselist custom field functionality
+  In order to use courselist custom fields
+  As an admin
+  I need to create and manage courselist fields with course images
 
   Background:
-    Given the following "custom field categories" exist:
-      | name              | component   | area   | itemid |
-      | Category for test | core_course | course | 0      |
-    And I log in as "admin"
-    And I navigate to "Courses > Course custom fields" in site administration
-
-  Scenario: Create a custom course checkbox field
-    When I click on "Add a new custom field" "link"
-    And I click on "Checkbox" "link"
-    And I set the following fields to these values:
-      | Name       | Test field |
-      | Short name | testfield  |
-    And I click on "Save changes" "button" in the "Adding a new Checkbox" "dialogue"
-    Then I should see "Test field"
-    And I log out
-
-  Scenario: Edit a custom course checkbox field
-    When I click on "Add a new custom field" "link"
-    And I click on "Checkbox" "link"
-    And I set the following fields to these values:
-      | Name       | Test field |
-      | Short name | testfield  |
-    And I click on "Save changes" "button" in the "Adding a new Checkbox" "dialogue"
-    And I click on "Edit" "link" in the "Test field" "table_row"
-    And I set the following fields to these values:
-      | Name | Edited field |
-    And I click on "Save changes" "button" in the "Updating Test field" "dialogue"
-    Then I should see "Edited field"
-    And I should not see "Test field"
-
-  Scenario: Delete a custom course checkbox field
-    When I click on "Add a new custom field" "link"
-    And I click on "Checkbox" "link"
-    And I set the following fields to these values:
-      | Name       | Test field |
-      | Short name | testfield  |
-    And I click on "Save changes" "button" in the "Adding a new Checkbox" "dialogue"
-    And I click on "Delete" "link" in the "Test field" "table_row"
-    And I click on "Yes" "button" in the "Confirm" "dialogue"
-    Then I should not see "Test field"
-    And I log out
-
-  Scenario: A checkbox checked by default must be shown on listing but allow uncheck that will keep showing
     Given the following "users" exist:
-      | username | firstname | lastname  | email                |
-      | teacher1 | Teacher   | Example 1 | teacher1@example.com |
-    And the following "courses" exist:
-      | fullname | shortname | format |
-      | Course 1 | C1        | topics |
-    And the following "course enrolments" exist:
-      | user     | course | role           |
-      | teacher1 | C1     | editingteacher |
-    When I click on "Add a new custom field" "link"
-    And I click on "Checkbox" "link"
+      | username | firstname | lastname |
+      | admin    | Admin     | User     |
+    And I log in as "admin"
+
+  Scenario: Create a courselist custom field with a course image
+    Given I navigate to "Courses > Custom fields" in site administration
+    And I press "Add a new custom field"
     And I set the following fields to these values:
-      | Name               | Test field |
-      | Short name         | testfield  |
-      | Checked by default | Yes        |
-    And I click on "Save changes" "button" in the "Adding a new Checkbox" "dialogue"
-    And I log out
-    And I log in as "teacher1"
-    And I am on site homepage
-    Then I should see "Test field: Yes"
-    When I am on "Course 1" course homepage
-    And I navigate to "Settings" in current page administration
-    And I expand all fieldsets
-    And I set the field "Test field" to ""
-    And I press "Save and display"
-    And I am on site homepage
-    Then I should see "Test field: No"
-    And I log out
+      | Field type | Courselist     |
+      | Name       | My Courselist  |
+      | Short name | mycourselist   |
+    And I upload "lib/tests/fixtures/empty.txt" file to "Course image" filemanager
+    And I press "Save changes"
+    Then I should see "My Courselist" in the "Custom fields" "table"
+
+  Scenario: View courselist field in a course
+    Given the following "courses" exist:
+      | fullname | shortname |
+      | Course 1 | C1        |
+    And the following "custom fields" exist:
+      | name         | shortname    | type      | category     | configdata                      |
+      | My Courselist| mycourselist | courselist| Default      | {"course_image":"draft_123"}    |
+    And I navigate to "Courses > Manage courses and categories" in site administration
+    And I follow "Course 1"
+    And I follow "Edit settings"
+    Then I should see "My Courselist"
+    And I should see "Course image" in the "My Courselist" "fieldset"
