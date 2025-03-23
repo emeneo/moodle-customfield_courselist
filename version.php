@@ -25,7 +25,7 @@ defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'customfield_courselist';
 $plugin->release   = '4.5-a';
-$plugin->version   = 2024120601;
+$plugin->version   = 2025030700;
 $plugin->requires  = 2022111800;
 $plugin->maturity  = MATURITY_STABLE;
 
