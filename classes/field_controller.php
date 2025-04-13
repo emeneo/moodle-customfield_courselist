@@ -65,9 +65,6 @@ class field_controller  extends \core_customfield\field_controller {
                 'return_types' => FILE_INTERNAL | FILE_EXTERNAL,
             ]
         );
-
-        //$mform->addElement('selectyesno', 'configdata[checkbydefault]', get_string('checkedbydefault', 'customfield_courselist'));
-        //$mform->setType('configdata[checkbydefault]', PARAM_BOOL);
     }
 
     /**
@@ -79,11 +76,6 @@ class field_controller  extends \core_customfield\field_controller {
      */
     public function config_form_validation(array $data, $files = array()) : array {
         $errors = parent::config_form_validation($data, $files);
-
-        //if ($data['configdata']['uniquevalues']) {
-        //    $errors['configdata[uniquevalues]'] = get_string('errorconfigunique', 'customfield_courselist');
-        //}
-
         return $errors;
     }
 
