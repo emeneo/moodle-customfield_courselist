@@ -33,7 +33,8 @@ defined('MOODLE_INTERNAL') || die;
  * @copyright 2018 David Matamoros <davidmc@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class field_controller  extends \core_customfield\field_controller {
+class field_controller  extends \core_customfield\field_controller
+{
     /**
      * Plugin type
      */
@@ -44,12 +45,10 @@ class field_controller  extends \core_customfield\field_controller {
      *
      * @param \MoodleQuickForm $mform
      */
-    public function config_form_definition(\MoodleQuickForm $mform) {
+    public function config_form_definition(\MoodleQuickForm $mform)
+    {
         $mform->addElement('header', 'header_specificsettings', get_string('specificsettings', 'customfield_courselist'));
         $mform->setExpanded('header_specificsettings', true);
-
-        // Use Moodle's maxbytes configuration, default to 1MB if not set
-        $maxbytes = !empty($CFG->maxbytes) ? $CFG->maxbytes : 1048576; // 1MB = 1048576 bytes
 
         $mform->addElement(
             'filemanager',
@@ -58,13 +57,16 @@ class field_controller  extends \core_customfield\field_controller {
             null,
             [
                 'subdirs' => 0,
-                'maxbytes' => $maxbytes,
-                'areamaxbytes' => $maxbytes,
+                'maxbytes' => 10485760,
+                'areamaxbytes' => 10485760,
                 'maxfiles' => 1,
                 'accepted_types' => ['image'],
                 'return_types' => FILE_INTERNAL | FILE_EXTERNAL,
             ]
         );
+
+        //$mform->addElement('selectyesno', 'configdata[checkbydefault]', get_string('checkedbydefault', 'customfield_courselist'));
+        //$mform->setType('configdata[checkbydefault]', PARAM_BOOL);
     }
 
     /**
@@ -74,8 +76,26 @@ class field_controller  extends \core_customfield\field_controller {
      * @param array $files
      * @return array associative array of error messages
      */
-    public function config_form_validation(array $data, $files = array()) : array {
+    public function config_form_validation(array $data, $files = array()): array
+    {
         $errors = parent::config_form_validation($data, $files);
+        
+        if ($data['configdata']['uniquevalues']) {
+            $errors['configdata[uniquevalues]'] = get_string('errorconfigunique', 'customfield_courselist');
+        }
+
+        if($data['configdata']['course_image']){
+            $context = \context_system::instance();
+            file_save_draft_area_files(
+                $data['configdata']['course_image'],
+                $context->id,
+                'coursefield_courselist',
+                'attachment',
+                $data['configdata']['course_image'],
+                $this->get_file_options()
+            );
+        }
+
         return $errors;
     }
 
@@ -84,7 +104,8 @@ class field_controller  extends \core_customfield\field_controller {
      * custom field grouping?
      * @return bool
      */
-    public function supports_course_grouping(): bool {
+    public function supports_course_grouping(): bool
+    {
         return true;
     }
 
@@ -94,11 +115,24 @@ class field_controller  extends \core_customfield\field_controller {
      * @param array $values the used values that need formatting
      * @return array
      */
-    public function course_grouping_format_values($values): array {
+    public function course_grouping_format_values($values): array
+    {
         $name = $this->get_formatted_name();
         return [
-            1 => $name.': '.get_string('yes'),
-            BLOCK_MYOVERVIEW_CUSTOMFIELD_EMPTY => $name.': '.get_string('no'),
+            1 => $name . ': ' . get_string('yes'),
+            BLOCK_MYOVERVIEW_CUSTOMFIELD_EMPTY => $name . ': ' . get_string('no'),
+        ];
+    }
+
+    private function get_file_options()
+    {
+        return [
+            'subdirs' => 0,
+            'maxbytes' => 10485760,
+            'areamaxbytes' => 10485760,
+            'maxfiles' => 1,
+            'accepted_types' => ['image'],
+            'return_types' => FILE_INTERNAL | FILE_EXTERNAL,
         ];
     }
 }
