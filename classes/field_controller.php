@@ -24,6 +24,8 @@
 
 namespace customfield_courselist;
 
+use core_files\external\delete\draft;
+
 defined('MOODLE_INTERNAL') || die;
 
 /**
@@ -55,18 +57,27 @@ class field_controller  extends \core_customfield\field_controller
             'configdata[course_image]',
             get_string('course_image', 'customfield_courselist'),
             null,
-            [
-                'subdirs' => 0,
-                'maxbytes' => 10485760,
-                'areamaxbytes' => 10485760,
-                'maxfiles' => 1,
-                'accepted_types' => ['image'],
-                'return_types' => FILE_INTERNAL | FILE_EXTERNAL,
-            ]
+            $this->get_file_options()
         );
-
-        //$mform->addElement('selectyesno', 'configdata[checkbydefault]', get_string('checkedbydefault', 'customfield_courselist'));
-        //$mform->setType('configdata[checkbydefault]', PARAM_BOOL);
+    }
+    
+    public function prepare_for_config_form(\stdClass $formdata) {
+        $fieldname = 'configdata[course_image]';
+        if($formdata->configdata['course_image']){
+            $context = \context_system::instance();
+            $draftitemid = file_get_submitted_draft_itemid('attachments');
+            $entryId = $formdata->configdata['course_image'];
+            file_prepare_draft_area(
+                $draftitemid, 
+                $context->id, 
+                'coursefield_courselist', 
+                'attachment', 
+                $entryId, 
+                $this->get_file_options()
+            );
+            $formdata->$fieldname = $draftitemid;
+        }
+        return $formdata;
     }
 
     /**
